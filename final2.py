@@ -10,7 +10,7 @@ disappearance_threshold = 2.0  # Time in seconds before triggering video change 
 # Load the up, down, and edit arrow images
 up_arrow_img = cv2.imread('arrowup.png', cv2.IMREAD_UNCHANGED)
 down_arrow_img = cv2.imread('arrowdown.png', cv2.IMREAD_UNCHANGED)
-edit_arrow_img = cv2.imread('edit.jpg', cv2.IMREAD_UNCHANGED)
+edit_arrow_img = cv2.imread('editt.png', cv2.IMREAD_UNCHANGED)
 
 # Load the videos
 video_files = ['video1.mp4', 'video2.mp4', 'output.mp4', 'rohit.mp4']
@@ -125,6 +125,41 @@ def overlay_video_on_markers(frame, marker_centers, video_frame):
 
     return frame
 
+# Function to overlay the video onto the detected ArUco markers
+def overlay_video_on_markerss(frame, marker_centers, video_frame):
+    # Ensure that exactly four markers (0, 1, 2, 3) are detected
+    if set(marker_centers.keys()) != {0, 1, 2, 3}:
+        return frame  # If not all required markers are detected, return the original frame
+
+    # Get dimensions of the video frame to be overlaid
+    h, w = video_frame.shape[:2]
+
+    # Define source points from the video (top-left, top-right, bottom-right, bottom-left)
+    pts_src = np.array([[0, 0], [w, 0], [w, h], [0, h]], dtype="float32")
+
+    # Define destination points from marker centers, in the correct order
+    pts_dst = np.array([
+        marker_centers[0],  # ID 0: top-left
+        marker_centers[1],  # ID 1: top-right
+        marker_centers[2],  # ID 2: bottom-right
+        marker_centers[3]   # ID 3: bottom-left
+    ], dtype="float32")
+
+    # Compute the perspective transform matrix and apply it to the video frame
+    M = cv2.getPerspectiveTransform(pts_src, pts_dst)
+    warped_video = cv2.warpPerspective(video_frame, M, (frame.shape[1], frame.shape[0]))
+
+    # Create a mask for the overlay area
+    mask = np.zeros_like(frame, dtype=np.uint8)
+    cv2.fillConvexPoly(mask, np.int32(pts_dst), (255, 255, 255))
+
+    # Combine the overlay with the background
+    frame_bg = cv2.bitwise_and(frame, cv2.bitwise_not(mask))
+    frame_fg = cv2.bitwise_and(warped_video, mask)
+    frame = cv2.add(frame_bg, frame_fg)
+
+    return frame
+
 # Initialize OpenCV ArUco dictionary and detector parameters
 aruco_dict_6x6 = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_50)
 aruco_dict_4x4 = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
@@ -197,10 +232,15 @@ while True:
                         print("Change video effect (Edit arrow hidden)!")
                         current_effect_index = (current_effect_index + 1) % len(video_effects)
                         marker_visibility[2] = False
+    marker_centers = {}
+    if ids_6x6 is not None:
+        for marker_corners, marker_id in zip(corners_6x6, ids_6x6.flatten()):
+            if marker_id in {0, 1, 2, 3}:
+                marker_centers[marker_id] = np.mean(marker_corners[0], axis=0)
 
-    if ids_6x6 is not None and len(ids_6x6) == 4:
-        marker_centers = [np.mean(corner[0], axis=0) for corner in corners_6x6]
-        frame = overlay_video_on_markers(frame, marker_centers, ProjVid_Frame)
+    # Overlay video on the four markers if they are all detected
+    if len(marker_centers) == 4:
+        frame = overlay_video_on_markerss(frame, marker_centers, ProjVid_Frame)
         cv2.aruco.drawDetectedMarkers(frame, corners_6x6, ids_6x6)
 
     cv2.imshow('Webcam Feed with Video Overlay and Effects', frame)
