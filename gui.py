@@ -60,7 +60,7 @@ def main():
     cap = st.session_state.get('cap', None)
     
     if cap is None or not cap.isOpened():
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(2)
         st.session_state['cap'] = cap
 
     if not cap.isOpened():
