@@ -3,14 +3,14 @@
 
 ## Working
 * Put videos required in a folder "video_files" 
-* Run the code final2.py 
+* Run the code `final2.py` 
 * Code uses occlusion to cycle through videos. Hover finger above the ArUco marker for 1 second
 ![alt text](<Images/Screenshot 2024-11-08 195918.png>)
 ![alt text](<Images/Screenshot 2024-11-08 200014.png>)
 
-* For 3D rendering of the object download any .stl or .obj file and run the code fcv_3d_1.py
+* For 3D rendering of the object download any .stl or .obj file and run the code `fcv_3d_1.py`
 ![alt text](Images/3drender.jpeg)
 
-* Run gui.py for a streamlit gui that provides added functionality to scale the 3D rendered model
+* Run `gui.py` for a streamlit gui that provides added functionality to scale the 3D rendered model
 ## Presentation link
 https://www.canva.com/design/DAGV5F9Lei4/a6VFa9CnG26kokhFInq-ag/edit
