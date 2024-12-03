@@ -12,3 +12,5 @@
 ![alt text](Images/3drender.jpeg)
 
 * Run gui.py for a streamlit gui that provides added functionality to scale the 3D rendered model
+## Presentation link
+https://www.canva.com/design/DAGV5F9Lei4/a6VFa9CnG26kokhFInq-ag/edit
