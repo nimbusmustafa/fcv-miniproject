@@ -39,8 +39,7 @@ It has **two modes of operation**:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/aruco-video-3d.git
-cd aruco-video-3d
+git clone https://github.com/nimbusmustafa/fcv-miniproject.git
 ```
 
 ### 2. Install dependencies
@@ -143,6 +142,7 @@ streamlit run gui.py
 * Save user sessions in Streamlit for persistent settings.
 
 ---
+
 
 
 
